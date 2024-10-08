@@ -1,0 +1,5 @@
+compile Matrix.java: javac -d bin src/Matrix.java
+compile Interpolasi.java: javac -cp bin -d bin src/Interpolasi.java
+
+menjalankan Matrix.class: java -cp bin Matrix
+menjalankan Interpolasi.class: java -cp bin Interpolasi

@@ -200,10 +200,10 @@ public class BicubicSplineInterpolation {
         double[][] Y = { { 1 }, { b }, { Math.pow(b, 2) }, { Math.pow(b, 3) } };
 
         // Hitung perkalian X * coeffs
-        double[][] temp = multiplyMatrix(X, coeffs);
+        double[][] temp = X.multiplyMatrix(coeffs);
 
         // Hitung perkalian hasil dengan transpose Y (kolom vektor)
-        double[][] result = multiplyMatrix(temp, Y);
+        double[][] result = temp.multiplyMatrix(Y);
 
         // Mengembalikan hasil akhir (skalar)
         return result[0][0];
@@ -216,7 +216,7 @@ public class BicubicSplineInterpolation {
         for (int i = 0; i < 16; i++) {
             valuesMatrix[i][0] = values[i];
         }
-        double[][] coeffs = multiplyMatrix(A_inv, valuesMatrix);
+        double[][] coeffs = A_inv.multiplyMatrix(valuesMatrix);
 
         // Bentuk kembali koefisien menjadi matriks 4x4
         double[][] reshaped = new double[4][4];
@@ -259,6 +259,6 @@ public class BicubicSplineInterpolation {
 
         // Menghitung hasil interpolasi bicubic spline pada titik (a, b)
         double result = bicubicInterpolation(coefficients, a, b);
-        System.out.println("Interpolated value at (" + a + ", " + b + "): " + result);
+        System.out.println("Nilai interpolasi di titik (" + a + ", " + b + "): " + result);
     }
 }

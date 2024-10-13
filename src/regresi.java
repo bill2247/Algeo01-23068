@@ -126,7 +126,10 @@ public class regresi {
 
         mX_Tran.matrix = matrix_X.transposeMatrix(); 
         result1.matrix = matrix_X.multiplyMatrix(mX_Tran);
-        mX_Inv.matrix = result1.InverseUsingGaussJordan(); //(X.XT)^-1
+        Invers mInvers = new Invers(result1.matrix);
+        mX_Inv.matrix = mInvers.invers();
+
+        //mX_Inv.matrix = result1.matrix.invers(); //(X.XT)^-1
         result2.matrix = mX_Tran.multiplyMatrix(matrix_Y);
 
         Mbeta = new Matrix(n,1);
@@ -136,8 +139,86 @@ public class regresi {
         Mbeta.writeMatrix();//delsoon
     }
 
+    public static void MultipleQuadraticRegression(){
+        //regresi kuadratik setidaknya 3 titik data (n >= 3);
+
+        int newM;
+        newM = (m*(m+1)/2) + m + 1;
+
+
+        Matrix newMX = new Matrix(n, newM);
+
+        //xi^2
+        for (int i = 0; i < n; i++){
+            for (int j = 0; j < m; j++){
+                newMX.matrix[i][j] = (matrix_X.matrix[i][j+1])*(matrix_X.matrix[i][j+1]);
+            }
+        }
+
+        //xi*xj
+        int kolom=0;
+
+        for (int baris = 0; baris < n; baris++){
+            kolom = m;
+            for (int i = 0; i < m; i++){
+                for (int j = i + 1; j < m; j++){
+                    newMX.matrix[baris][kolom] = (matrix_X.matrix[baris][i+1] * matrix_X.matrix[baris][j+1]);
+                    kolom += 1;
+                }
+            }
+        }
+
+        //xi
+        for (int baris = 0; baris < n; baris++){
+            int j = 1;
+            for (int i = kolom; i < newM-1; i++){
+                newMX.matrix[baris][i] = matrix_X.matrix[baris][j];
+                j++;
+            }
+        }
+
+        //1
+        for (int baris = 0; baris < n; baris++){
+            newMX.matrix[baris][newM-1] = 1;
+        }
+
+        //algoritma sama kyk linear (matrix : newMX)
+        Matrix mX_Tran = new Matrix(newM, n); 
+        Matrix mX_Inv = new Matrix(newM,newM);
+        Matrix result1 = new Matrix(newM,newM); //X*XT
+        Matrix result2 = new Matrix(newM,1);
+    
+        System.out.println();
+        newMX.writeMatrix(); System.out.println();
+        matrix_Y.writeMatrix(); System.out.println();
+
+        mX_Tran.matrix = newMX.transposeMatrix();  
+        result1.matrix = mX_Tran.multiplyMatrix(newMX);
+        mX_Inv.matrix = result1.InverseUsingAdjoin(); //(X.XT)^-1, kompleksitasnya kegedean //kalau jumlah datanya cukup, bisa pakai spl biasa
+        result2.matrix = mX_Tran.multiplyMatrix(matrix_Y); 
+        
+        mX_Tran.writeMatrix(); System.out.println();
+        result1.writeMatrix(); System.out.println();
+        mX_Inv.writeMatrix(); System.out.println();
+        result2.writeMatrix(); System.out.println();
+        
+        Mbeta = new Matrix(newM,1);
+        Mbeta.matrix = mX_Inv.multiplyMatrix(result2); 
+
+        System.out.println(); 
+        Mbeta.writeMatrix();//delsoon
+
+        /*coba cek lagi yang using gauss jordan dan using adj, soalnya ada perbedaan hasil, 
+        tapi dari dua pendekatan yang ada mendekati semua (kalau dibulatkan cenderung sama) (namanya juga regeresi, cuman taksiran)
+        
+        Cara lain bisa menggunakan SPL langsung, hanya saja harus punya data yang cukup banyak, misal ada 1 peubah, minimal butuh 3 data, kalau ada 2
+        peubah butuh 6 data, 3 peubah 10 data dan seterusnya, kalau jumlah data tidak banyak tidak bisa didapat matriks beta. 
+        
+        */
+    }
+
     public static void main(String[] ags){
         readMatrix();
-        MultipleLinearRegression();
+        MultipleQuadraticRegression();
     }
 }

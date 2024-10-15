@@ -126,10 +126,7 @@ public class regresi {
 
         mX_Tran.matrix = matrix_X.transposeMatrix(); 
         result1.matrix = matrix_X.multiplyMatrix(mX_Tran);
-        Invers mInvers = new Invers(result1.matrix);
-        mX_Inv.matrix = mInvers.invers();
-
-        //mX_Inv.matrix = result1.matrix.invers(); //(X.XT)^-1
+        mX_Inv.matrix = result1.InverseUsingGaussJordan(); //(X.XT)^-1
         result2.matrix = mX_Tran.multiplyMatrix(matrix_Y);
 
         Mbeta = new Matrix(n,1);
@@ -194,7 +191,7 @@ public class regresi {
 
         mX_Tran.matrix = newMX.transposeMatrix();  
         result1.matrix = mX_Tran.multiplyMatrix(newMX);
-        mX_Inv.matrix = result1.InverseUsingAdjoin(); //(X.XT)^-1, kompleksitasnya kegedean //kalau jumlah datanya cukup, bisa pakai spl biasa
+        mX_Inv.matrix = result1.InverseUsingAdjoin(); //(X.XT)^-1,
         result2.matrix = mX_Tran.multiplyMatrix(matrix_Y); 
         
         mX_Tran.writeMatrix(); System.out.println();
@@ -209,12 +206,7 @@ public class regresi {
         Mbeta.writeMatrix();//delsoon
 
         /*coba cek lagi yang using gauss jordan dan using adj, soalnya ada perbedaan hasil, 
-        tapi dari dua pendekatan yang ada mendekati semua (kalau dibulatkan cenderung sama) (namanya juga regeresi, cuman taksiran)
-        
-        Cara lain bisa menggunakan SPL langsung, hanya saja harus punya data yang cukup banyak, misal ada 1 peubah, minimal butuh 3 data, kalau ada 2
-        peubah butuh 6 data, 3 peubah 10 data dan seterusnya, kalau jumlah data tidak banyak tidak bisa didapat matriks beta. 
-        
-        */
+        tapi dari dua pendekatan yang ada mendekati semua (kalau dibulatkan cenderung sama) (namanya juga regeresi, cuman taksiran)*/
     }
 
     public static void main(String[] ags){

@@ -556,12 +556,9 @@ public class Matrix{
                 System.out.println("SPL tidak memiliki solusi.");
                 break;
             } else if (allZero && this.matrix[i][this.colNum - 1] == 0) {
-                this.rowNum --;
+                infiniteSolution = true;
+                break;
             }
-        }
-        
-        if (this.rowNum < this.colNum - 1){
-            infiniteSolution = true;
         }
 
         if (hasSolution){
@@ -648,11 +645,9 @@ public class Matrix{
                 System.out.println("SPL tidak memiliki solusi.");
                 break;
             } else if (allZero && this.matrix[i][this.colNum - 1] == 0) {
-                this.rowNum --;
+                infiniteSolution = true;
+                break;
             }
-        }
-        if (this.rowNum < this.colNum - 1){
-            infiniteSolution = true;
         }
 
         if (hasSolution){

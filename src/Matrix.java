@@ -267,31 +267,38 @@ public class Matrix{
         int countTukar = 0;
         while (row < this.rowNum && col < this.colNum) {
             // Mencari baris dengan elemen terbesar pada kolom ke-col
-            int maxRow = row;
-            for (int i = row + 1; i < this.rowNum; i++) {
-                if (Math.abs(upperTriangularMatrix.matrix[i][col]) > Math.abs(upperTriangularMatrix.matrix[maxRow][col])) {
-                    maxRow = i;
+            int rowTakNol = row;
+            if (upperTriangularMatrix.matrix[row][col] == 0){
+                for (int i = row +1; i < this.rowNum; i++){
+                    if (upperTriangularMatrix.matrix[i][col] != 0){
+                        rowTakNol = i;
+                        break;
+                    }
                 }
             }
             
-            // Menukar baris row dan maxRow jika diperlukan
-            if (maxRow != row) {
+            // Menukar baris row dan rowTakNol jika diperlukan
+            if (rowTakNol != row) {
                 countTukar++;
                 for (int i = 0; i < this.colNum; i++) {
                     double temp = upperTriangularMatrix.matrix[row][i];
-                    upperTriangularMatrix.matrix[row][i] = upperTriangularMatrix.matrix[maxRow][i];
-                    upperTriangularMatrix.matrix[maxRow][i] = temp;
+                    upperTriangularMatrix.matrix[row][i] = upperTriangularMatrix.matrix[rowTakNol][i];
+                    upperTriangularMatrix.matrix[rowTakNol][i] = temp;
                 }
             }
-    
-            // Mengurangi baris-baris di bawah baris row
-            for (int i = row + 1; i < this.rowNum; i++) {
-                double factor = upperTriangularMatrix.matrix[i][col] / upperTriangularMatrix.matrix[row][col];
-                for (int j = col; j < this.colNum; j++) {
-                    upperTriangularMatrix.matrix[i][j] -= factor * upperTriangularMatrix.matrix[row][j];
+
+            if (upperTriangularMatrix.matrix[row][col] == 0){
+                col++;
+                continue;
+            } else {
+                // Mengurangi baris-baris di bawah baris row
+                for (int i = row + 1; i < this.rowNum; i++) {
+                    double factor = upperTriangularMatrix.matrix[i][col] / upperTriangularMatrix.matrix[row][col];
+                    for (int j = col; j < this.colNum; j++) {
+                        upperTriangularMatrix.matrix[i][j] -= factor * upperTriangularMatrix.matrix[row][j];
+                    }
                 }
             }
-    
             row++;
             col++;
         }

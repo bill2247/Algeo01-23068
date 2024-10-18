@@ -6,21 +6,21 @@ public class BicubicSplineInterpolation {
     // Matriks A untuk interpolasi
     static double[][] A = {
         {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-        {1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-        {1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-        {1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0},
         {0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-        {0, 1, 2, 3, 1, 1, 2, 3, 0, 0, 0, 0, 0, 0, 0, 0},
-        {0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0},
-        {0, 1, 2, 3, 1, 1, 2, 3, 1, 1, 2, 3, 0, 0, 0, 0},
+        {-3, 3, 0, 0, -2, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+        {2, -2, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
         {0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0},
-        {0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0},
-        {0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 2, 3, 0, 0, 0, 0},
-        {0, 0, 0, 0, 1, 0, 0, 0, 1, 1, 2, 3, 1, 1, 2, 3},
         {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0},
-        {0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0},
-        {0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 1, 1, 2, 3},
-        {0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 2, 3, 1, 1, 2, 3}
+        {0, 0, 0, 0, 0, 0, 0, 0, -3, 3, 0, 0, -2, -1, 0, 0},
+        {0, 0, 0, 0, 0, 0, 0, 0, 2, -2, 0, 0, 1, 1, 0, 0},
+        {-3, 0, 3, 0, 0, 0, 0, 0, -2, 0, -1, 0, 0, 0, 0, 0},
+        {0, 0, 0, 0, -3, 0, 3, 0, 0, 0, 0, 0, -2, 0, -1, 0},
+        {9, -9, -9, 9, 6, 3, -6, -3, 6, -6, 3, -3, 4, 2, 2, 1},
+        {-6, 6, 6, -6, -3, -3, 3, 3, -4, 4, -2, 2, -2, -2, -1, -1},
+        {2, 0, -2, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0},
+        {0, 0, 0, 0, 2, 0, -2, 0, 0, 0, 0, 0, 1, 0, 1, 0},
+        {-6, 6, 6, -6, -4, -2, 4, 2, -3, 3, -3, 3, -2, -1, -2, -1},
+        {4, -4, -4, 4, 2, 2, -2, -2, 2, -2, 2, -2, 1, 1, 1, 1}
     };
 
     // Fungsi untuk membaca input manual dari pengguna
@@ -75,13 +75,13 @@ public class BicubicSplineInterpolation {
     }
 
     // Fungsi untuk menghitung koefisien interpolasi bicubic
-    public static Matrix getCoefficients(double[] values, Matrix A_inv) {
+    public static Matrix getCoefficients(double[] values, Matrix matrixA) {
         // melakukan perkalian A_inv dengan values untuk mendapatkan koefisien
         Matrix valuesMatrix = new Matrix(16, 1);
         for (int i = 0; i < 16; i++) {
             valuesMatrix.matrix[i][0] = values[i];
         }
-        double[][] coeffsArray = A_inv.multiplyMatrix(valuesMatrix);
+        double[][] coeffsArray = matrixA.multiplyMatrix(valuesMatrix);
         Matrix coeffs = new Matrix(4, 4);
         coeffs.matrix = coeffsArray;
 
@@ -124,7 +124,7 @@ public class BicubicSplineInterpolation {
             }
         }
         System.out.println(Arrays.toString(values));
-        Matrix coefficients = getCoefficients(values, A_inv);
+        Matrix coefficients = getCoefficients(values, matrixA);
         coefficients.writeMatrix();
         // Menghitung hasil interpolasi bicubic spline pada titik (a, b)
         double result = bicubicInterpolation(coefficients, a, b);

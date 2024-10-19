@@ -120,17 +120,32 @@ public class regresi {
 
     public static void MultipleLinearRegression(){
         Matrix mX_Tran = new Matrix(m+1, n);
-        Matrix mX_Inv = new Matrix(n,n);
         Matrix result1 = new Matrix(n,n); //X*XT
         Matrix result2 = new Matrix(n,1);
 
         mX_Tran.matrix = matrix_X.transposeMatrix(); 
-        result1.matrix = matrix_X.multiplyMatrix(mX_Tran);
-        mX_Inv.matrix = result1.InverseUsingGaussJordan(); //(X.XT)^-1
+        result1.matrix = mX_Tran.multiplyMatrix(matrix_X);
         result2.matrix = mX_Tran.multiplyMatrix(matrix_Y);
 
+        result1.roundMatrixElements();
+        result2.roundMatrixElements();
+
+        //gabung result1 dan result2 menjadi matrix augmented
+
+        Matrix augmented = new Matrix(result1.rowNum, result1.colNum+1);
+
+        for (int i = 0; i < result1.rowNum; i++){
+            for(int j = 0; j < result1.colNum; j++){
+                augmented.matrix[i][j] = result1.matrix[i][j];
+            }
+            augmented.matrix[i][result1.colNum] = result2.matrix[i][0];
+        }
+
+        augmented.roundMatrixElements();
+        augmented.solveSPLGaussMethod();
+        
+
         Mbeta = new Matrix(n,1);
-        Mbeta.matrix = mX_Inv.multiplyMatrix(result2); 
 
         System.out.println(); 
         Mbeta.writeMatrix();//delsoon
@@ -141,7 +156,6 @@ public class regresi {
 
         int newM;
         newM = (m*(m+1)/2) + m + 1;
-
 
         Matrix newMX = new Matrix(n, newM);
 
@@ -181,7 +195,6 @@ public class regresi {
 
         //algoritma sama kyk linear (matrix : newMX)
         Matrix mX_Tran = new Matrix(newM, n); 
-        Matrix mX_Inv = new Matrix(newM,newM);
         Matrix result1 = new Matrix(newM,newM); //X*XT
         Matrix result2 = new Matrix(newM,1);
     
@@ -191,16 +204,25 @@ public class regresi {
 
         mX_Tran.matrix = newMX.transposeMatrix();  
         result1.matrix = mX_Tran.multiplyMatrix(newMX);
-        mX_Inv.matrix = result1.InverseUsingAdjoin(); //(X.XT)^-1,
         result2.matrix = mX_Tran.multiplyMatrix(matrix_Y); 
         
         mX_Tran.writeMatrix(); System.out.println();
         result1.writeMatrix(); System.out.println();
-        mX_Inv.writeMatrix(); System.out.println();
         result2.writeMatrix(); System.out.println();
         
+        Matrix augmented = new Matrix(result1.rowNum, result1.colNum+1);
+
+        for (int i = 0; i < result1.rowNum; i++){
+            for(int j = 0; j < result1.colNum; j++){
+                augmented.matrix[i][j] = result1.matrix[i][j];
+            }
+            augmented.matrix[i][result1.colNum] = result2.matrix[i][0];
+        }
+
+        augmented.writeMatrix();
+        augmented.solveSPLGaussMethod();
+
         Mbeta = new Matrix(newM,1);
-        Mbeta.matrix = mX_Inv.multiplyMatrix(result2); 
 
         System.out.println(); 
         Mbeta.writeMatrix();//delsoon
@@ -211,6 +233,7 @@ public class regresi {
 
     public static void main(String[] ags){
         readMatrix();
-        MultipleQuadraticRegression();
+        //MultipleQuadraticRegression();
+        MultipleLinearRegression();
     }
 }

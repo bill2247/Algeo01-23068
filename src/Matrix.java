@@ -7,6 +7,9 @@ public class Matrix{
     int rowNum;
     int colNum;
     double[] SPLsolution;
+    String[] infiniteSPLsol;
+    boolean infiniteSol = false;
+    double[][] infiniteKoef;
 
     public Matrix(int rowNum, int colNum){
         this.rowNum = rowNum;
@@ -19,7 +22,7 @@ public class Matrix{
         this.colNum = 0;
     }
 
-    public void readMatrix(){
+    public void readMatrix(String type){
         // I. S. : Matrix belum terisi
         // F. S. : Matrix sudah terisi
 
@@ -70,7 +73,7 @@ public class Matrix{
         // Mengisi matrix dengan file .txt
         } else if (choice == 2){
             System.out.print("Masukkan nama file: ");
-            String filename = "test/" + scanner.nextLine();
+            String filename = "test/" + type + "/" + scanner.nextLine() + ".txt";
             try {
                 File file = new File(filename);
 
@@ -264,31 +267,38 @@ public class Matrix{
         int countTukar = 0;
         while (row < this.rowNum && col < this.colNum) {
             // Mencari baris dengan elemen terbesar pada kolom ke-col
-            int maxRow = row;
-            for (int i = row + 1; i < this.rowNum; i++) {
-                if (Math.abs(upperTriangularMatrix.matrix[i][col]) > Math.abs(upperTriangularMatrix.matrix[maxRow][col])) {
-                    maxRow = i;
+            int rowTakNol = row;
+            if (upperTriangularMatrix.matrix[row][col] == 0){
+                for (int i = row +1; i < this.rowNum; i++){
+                    if (upperTriangularMatrix.matrix[i][col] != 0){
+                        rowTakNol = i;
+                        break;
+                    }
                 }
             }
             
-            // Menukar baris row dan maxRow jika diperlukan
-            if (maxRow != row) {
+            // Menukar baris row dan rowTakNol jika diperlukan
+            if (rowTakNol != row) {
                 countTukar++;
                 for (int i = 0; i < this.colNum; i++) {
                     double temp = upperTriangularMatrix.matrix[row][i];
-                    upperTriangularMatrix.matrix[row][i] = upperTriangularMatrix.matrix[maxRow][i];
-                    upperTriangularMatrix.matrix[maxRow][i] = temp;
+                    upperTriangularMatrix.matrix[row][i] = upperTriangularMatrix.matrix[rowTakNol][i];
+                    upperTriangularMatrix.matrix[rowTakNol][i] = temp;
                 }
             }
-    
-            // Mengurangi baris-baris di bawah baris row
-            for (int i = row + 1; i < this.rowNum; i++) {
-                double factor = upperTriangularMatrix.matrix[i][col] / upperTriangularMatrix.matrix[row][col];
-                for (int j = col; j < this.colNum; j++) {
-                    upperTriangularMatrix.matrix[i][j] -= factor * upperTriangularMatrix.matrix[row][j];
+
+            if (upperTriangularMatrix.matrix[row][col] == 0){
+                col++;
+                continue;
+            } else {
+                // Mengurangi baris-baris di bawah baris row
+                for (int i = row + 1; i < this.rowNum; i++) {
+                    double factor = upperTriangularMatrix.matrix[i][col] / upperTriangularMatrix.matrix[row][col];
+                    for (int j = col; j < this.colNum; j++) {
+                        upperTriangularMatrix.matrix[i][j] -= factor * upperTriangularMatrix.matrix[row][j];
+                    }
                 }
             }
-    
             row++;
             col++;
         }
@@ -304,7 +314,6 @@ public class Matrix{
         return determinant;
     }
     
-
     public double[][] InverseUsingAdjoin(){
         // Menghasilkan invers dari this.matrix mengunakan metode adjoint
         if (this.rowNum != this.colNum) {
@@ -394,6 +403,102 @@ public class Matrix{
         return inverseMatrix;
     }
 
+    public void solveManySolution(){
+        this.infiniteKoef = new double[this.colNum - 1][this.colNum];
+        for (int i = 0; i < this.colNum - 1; i++){
+            for (int j = 0; j < this.colNum; j++){
+                if (i == j){
+                    this.infiniteKoef[i][j] = 1;
+                } else {
+                    this.infiniteKoef[i][j] = 0;
+                }
+            }
+        }
+        
+        this.infiniteSPLsol = new String[this.colNum - 1];
+        boolean[] aVar = new boolean[this.colNum - 1];
+        for (int i = 0; i < this.colNum - 1; i++){
+            aVar[i] = true;
+        }
+        char[] param = new char[this.colNum - 1];
+
+        for (int i = this.rowNum - 1; i >= 0; i--){
+            for (int j = i; j < this.colNum - 1; j++){
+                if (this.matrix[i][j] == 1){
+                    aVar[j] = false;
+                    this.infiniteKoef[j][j] = 0;
+                    this.infiniteKoef[j][this.colNum - 1] = this.matrix[i][this.colNum - 1];
+                    for (int k = j+1; k < this.colNum - 1; k++){
+                        if (this.matrix[i][k] != 0){
+                            if (aVar[k]){
+                                this.infiniteKoef[j][k] -= this.matrix[i][k];
+                            } else {
+                                for (int l = k + 1; l <= this.colNum - 1; l++){
+                                    if (this.infiniteKoef[k][l] != 0){
+                                        this.infiniteKoef[j][l] -= this.matrix[i][k] * this.infiniteKoef[k][l];
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    break;
+                }
+            }
+        }
+
+        // menampilkan this.infiniteKoef
+        // for (int i = 0; i < this.colNum - 1; i++){
+        //     for (int j = 0; j < this.colNum; j++){
+        //         System.out.print(this.infiniteKoef[i][j] + " ");
+        //     }
+        //     System.out.println();
+        // }
+
+        int var = 0;
+        for (int i = 0; i < this.colNum - 1; i++){
+            if (aVar[i]){
+                param[i] = (char) (97 + var);
+                var ++;
+            }
+        }
+
+        for (int i = 0; i < this.colNum - 1; i++){
+            if (aVar[i]){
+                this.infiniteSPLsol[i] = "x" + Integer.toString(i+1) + " = " + Character.toString(param[i]);
+            } else {
+                boolean isZero = true;
+                for (int j = i + 1; j <= this.colNum - 1; j++){
+                    if (this.infiniteKoef[i][j] != 0){
+                        isZero = false;
+                        break;
+                    }
+                }
+                if (isZero){
+                    this.infiniteSPLsol[i] = "x" + Integer.toString(i+1) + " = 0";
+                } else {
+                    String temp = "";
+                    if (this.infiniteKoef[i][this.colNum - 1] != 0){
+                        temp += Double.toString(this.infiniteKoef[i][this.colNum - 1]);
+                    }
+                    for (int j = i + 1; j < this.colNum - 1; j++){
+                        if (this.infiniteKoef[i][j] != 0){
+                            if (this.infiniteKoef[i][j] > 0){
+                                temp += (temp.length() == 0 ? "" : " + ");
+                                temp += (this.infiniteKoef[i][j] != 1.0 ? Double.toString(this.infiniteKoef[i][j]) : "");
+                                temp += Character.toString(param[j]);
+                            } else {
+                                temp += "-";
+                                temp += (this.infiniteKoef[i][j] != -1.0 ? Double.toString(-this.infiniteKoef[i][j]) : "");
+                                temp += Character.toString(param[j]);
+                            }
+                        }
+                    }
+                    this.infiniteSPLsol[i] = "x" + Integer.toString(i+1) + " = " + temp;
+                }
+            }
+        }
+    }   
+
     // Mencari solusi SPL menggunakan metode eliminasi Gauss
     public void solveSPLGaussMethod(){
         // I. S. : Matriks augmented sudah terisi
@@ -409,23 +514,36 @@ public class Matrix{
                 }
             }
 
-            // Menukar baris row dan maxRow
-            for (int i = 0; i < this.colNum; i++) {
-                double temp = this.matrix[row][i];
-                this.matrix[row][i] = this.matrix[maxRow][i];
-                this.matrix[maxRow][i] = temp;
-            }
-
-            // Mengurangi baris-baris di bawah baris row
-            for (int i = row + 1; i < this.rowNum; i++) {
-                double factor = this.matrix[i][col] / this.matrix[row][col];
-                for (int j = col; j < this.colNum; j++) {
-                    this.matrix[i][j] -= factor * this.matrix[row][j];
+            if (this.matrix[maxRow][col] == 0){
+                col ++;
+            } else {
+                // Menukar baris row dan maxRow
+                for (int i = 0; i < this.colNum; i++) {
+                    double temp = this.matrix[row][i];
+                    this.matrix[row][i] = this.matrix[maxRow][i];
+                    this.matrix[maxRow][i] = temp;
                 }
+    
+                // Mengurangi baris-baris di bawah baris row
+                for (int i = row + 1; i < this.rowNum; i++) {
+                    double factor = this.matrix[i][col] / this.matrix[row][col];
+                    for (int j = col; j < this.colNum; j++) {
+                        this.matrix[i][j] -= factor * this.matrix[row][j];
+                    }
+                }
+    
+                // Membentuk satu utama pada baris row
+                double pivot = this.matrix[row][col];
+                for (int j = col; j < this.colNum; j++) {
+                    this.matrix[row][j] /= pivot;
+                    if (this.matrix[row][j] == -0.0){
+                        this.matrix[row][j] = 0.0;
+                    }
+                }
+    
+                row++;
+                col++;
             }
-
-            row++;
-            col++;
         }
 
         // Mengecek apakah SPL memiliki solusi
@@ -446,14 +564,14 @@ public class Matrix{
                 break;
             } else if (allZero && this.matrix[i][this.colNum - 1] == 0) {
                 infiniteSolution = true;
-                System.out.println("SPL memiliki banyak solusi.");
                 break;
             }
         }
 
         if (hasSolution){
             if (infiniteSolution){
-                // Menampilkan solusi parametrik
+                this.infiniteSol = true;
+                this.solveManySolution();
             } else {
                 // Mencari solusi SPL
                 this.SPLsolution = new double[this.colNum - 1];
@@ -465,6 +583,7 @@ public class Matrix{
                     this.SPLsolution[i] = (this.matrix[i][this.colNum - 1] - sum) / this.matrix[i][i];
                 }
             }
+            printSol();
         }
     }
 
@@ -483,33 +602,37 @@ public class Matrix{
                 }
             }
 
-            // Menukar baris row dan maxRow
-            for (int i = 0; i < this.colNum; i++) {
-                double temp = this.matrix[row][i];
-                this.matrix[row][i] = this.matrix[maxRow][i];
-                this.matrix[maxRow][i] = temp;
-            }
-
-            // Membagi baris row dengan elemen pada kolom ke-col
-            double factor = this.matrix[row][col];
-            for (int i = col; i < this.colNum; i++) {
-                this.matrix[row][i] /= factor;
-            }
-
-            // Mengurangi baris-baris selain row
-            for (int i = 0; i < this.rowNum; i++) {
-                if (i == row) {
-                    continue;
+            if (this.matrix[maxRow][col] == 0){
+                col ++;
+            } else {
+                // Menukar baris row dan maxRow
+                for (int i = 0; i < this.colNum; i++) {
+                    double temp = this.matrix[row][i];
+                    this.matrix[row][i] = this.matrix[maxRow][i];
+                    this.matrix[maxRow][i] = temp;
                 }
-
-                factor = this.matrix[i][col];
-                for (int j = col; j < this.colNum; j++) {
-                    this.matrix[i][j] -= factor * this.matrix[row][j];
+    
+                // Membagi baris row dengan elemen pada kolom ke-col
+                double factor = this.matrix[row][col];
+                for (int i = col; i < this.colNum; i++) {
+                    this.matrix[row][i] /= factor;
                 }
+    
+                // Mengurangi baris-baris selain row
+                for (int i = 0; i < this.rowNum; i++) {
+                    if (i == row) {
+                        continue;
+                    }
+    
+                    factor = this.matrix[i][col];
+                    for (int j = col; j < this.colNum; j++) {
+                        this.matrix[i][j] -= factor * this.matrix[row][j];
+                    }
+                }
+    
+                row++;
+                col++;
             }
-
-            row++;
-            col++;
         }
 
         // Mengecek apakah SPL memiliki solusi
@@ -530,14 +653,14 @@ public class Matrix{
                 break;
             } else if (allZero && this.matrix[i][this.colNum - 1] == 0) {
                 infiniteSolution = true;
-                System.out.println("SPL memiliki banyak solusi.");
                 break;
             }
         }
 
         if (hasSolution){
             if (infiniteSolution){
-                // Menampilkan solusi parametrik
+                this.infiniteSol = true;
+                this.solveManySolution();
             } else {
                 // Mencari solusi SPL
                 this.SPLsolution = new double[this.colNum - 1];
@@ -545,6 +668,7 @@ public class Matrix{
                     this.SPLsolution[i] = this.matrix[i][this.colNum - 1];
                 }
             }
+            printSol();
         }
     }
 
@@ -572,7 +696,7 @@ public class Matrix{
         for (int i = 0; i < this.rowNum; i++){
             this.SPLsolution[i] = X.matrix[i][0];
         }
-        
+        printSol();
     }
 
     public void solveSPLUsingCramer(){
@@ -608,13 +732,20 @@ public class Matrix{
                 this.SPLsolution[i] = determinantAi / determinantA;
             }
         }
+        printSol();
     }
 
     public void printSol(){
         // I. S. : Solusi SPL sudah terisi
         // F. S. : Solusi SPL ditampilkan pada layar
-        for (int i = 0; i < this.rowNum; i++) {
-            System.out.println("x" + (i + 1) + " = " + this.SPLsolution[i]);
+        if (this.infiniteSol){
+            for (int i = 0; i < this.colNum - 1; i ++){
+                System.out.println(this.infiniteSPLsol[i]);
+            }
+        } else {
+            for (int i = 0; i < this.rowNum; i++) {
+                System.out.println("x" + (i + 1) + " = " + this.SPLsolution[i]);
+            }
         }
     }
 
@@ -638,7 +769,7 @@ public class Matrix{
                 System.out.print("Pilihan: ");
                 int method = scanner.nextInt();
                 Matrix SPL = new Matrix();
-                SPL.readMatrix();
+                SPL.readMatrix("SPL");
                 if (method == 1){
                     SPL.solveSPLGaussMethod();
                 } else if (method == 2){
@@ -648,8 +779,6 @@ public class Matrix{
                 } else if (method == 4){
                     SPL.solveSPLUsingCramer();
                 }
-                // menampilkan hasil solusi SPL
-                SPL.printSol();
             } else if (choice == 2){
                 System.out.println("Masukkan metode perhitungan determinan: ");
                 System.out.println("1. Metode kofaktor");
@@ -657,7 +786,7 @@ public class Matrix{
                 System.out.print("Pilihan: ");
                 int method = scanner.nextInt();
                 Matrix mat = new Matrix();
-                mat.readMatrix();
+                mat.readMatrix("Determinan");
                 double determinant = 0;
                 if (method == 1){
                     determinant = mat.DeterminantUsingCofactor();
@@ -673,7 +802,7 @@ public class Matrix{
                 System.out.print("Pilihan: ");
                 int method = scanner.nextInt();
                 Matrix mat = new Matrix();
-                mat.readMatrix();
+                mat.readMatrix("Invers");
                 double[][] inverseMatrix = null;
                 if (method == 1){
                     inverseMatrix = mat.InverseUsingAdjoin();
@@ -704,4 +833,3 @@ public class Matrix{
     scanner.close();
     }
 }
-

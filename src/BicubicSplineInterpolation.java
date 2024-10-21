@@ -7,20 +7,20 @@ public class BicubicSplineInterpolation {
     static double[][] A = {
         {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
         {1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-        {1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-        {1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0},
-        {0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-        {0, 1, 2, 3, 1, 1, 2, 3, 0, 0, 0, 0, 0, 0, 0, 0},
+        {1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0},
+        {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
+        {0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+        {0, 1, 2, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+        {0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0},
+        {0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3},
         {0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0},
-        {0, 1, 2, 3, 1, 1, 2, 3, 1, 1, 2, 3, 0, 0, 0, 0},
-        {0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0},
-        {0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0},
-        {0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 2, 3, 0, 0, 0, 0},
-        {0, 0, 0, 0, 1, 0, 0, 0, 1, 1, 2, 3, 1, 1, 2, 3},
-        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0},
-        {0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0},
-        {0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 1, 1, 2, 3},
-        {0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 2, 3, 1, 1, 2, 3}
+        {0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0, 0, 1, 0, 0, 0, 2, 0, 0, 0, 3, 0, 0, 0},
+        {0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3},
+        {0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0, 0, 0, 1, 2, 3, 0, 0, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0, 0, 0, 1, 0, 0, 0, 2, 0, 0, 0, 3, 0, 0},
+        {0, 0, 0, 0, 0, 1, 2, 3, 0, 2, 4, 6, 0, 3, 6, 9}
     };
 
     // Fungsi untuk membaca input manual dari pengguna
@@ -28,8 +28,12 @@ public class BicubicSplineInterpolation {
         Scanner scanner = new Scanner(System.in);
         double[][] matrix = new double[4][4]; // Perbaiki tipe data di sini
 
-        System.out.println("Masukkan nilai f(0, 0), f(1, 0), f(0, 1), f(1, 1), fx(0, 0), fx(1, 0), fx(0, 1), fx(1, 1),");
-        System.out.println("fy(0, 0), fy(1, 0), fy(0, 1), fy(1, 1), fxy(0, 0), fxy(1, 0), fxy(0, 1), fxy(1, 1) secara berurutan:");
+        System.out.println("Masukkan nilai:");
+        System.out.println("f(0, 0), f(1, 0), f(0, 1), f(1, 1),");
+        System.out.println("fx(0, 0), fx(1, 0), fx(0, 1), fx(1, 1),");
+        System.out.println("fy(0, 0), fy(1, 0), fy(0, 1), fy(1, 1),");
+        System.out.println("fxy(0, 0), fxy(1, 0), fxy(0, 1), fxy(1, 1)");
+        System.out.println("Serta masukkan nilai a dan b yang ingin dicari dalam f(a,b):");
 
         // Membaca matriks 4x4
         for (int i = 0; i < 4; i++) {
@@ -39,7 +43,6 @@ public class BicubicSplineInterpolation {
         }
 
         // Membaca nilai a dan b
-        System.out.println("Masukkan nilai a dan b yang dicari:");
         double a = scanner.nextDouble();
         double b = scanner.nextDouble();
 
@@ -108,13 +111,10 @@ public class BicubicSplineInterpolation {
         // Membuat objek matriks A
         Matrix matrixA = new Matrix(16, 16);
         matrixA.matrix = A;
-        matrixA.writeMatrix();
         // Menghitung invers dari matriks A
         double[][] A_invArray = matrixA.InverseUsingGaussJordan();
         Matrix A_inv = new Matrix(16, 16);
         A_inv.matrix = A_invArray;
-        A_inv.writeMatrix();
-
         // Menggunakan nilai dari input manual untuk menghitung koefisien
         double[] values = new double[16];
         int index = 0;
@@ -123,9 +123,7 @@ public class BicubicSplineInterpolation {
                 values[index++] = matrix[i][j];
             }
         }
-        System.out.println(Arrays.toString(values));
         Matrix coefficients = getCoefficients(values, A_inv);
-        coefficients.writeMatrix();
         // Menghitung hasil interpolasi bicubic spline pada titik (a, b)
         double result = bicubicInterpolation(coefficients, a, b);
         System.out.println("Nilai interpolasi di titik (" + a + ", " + b + "): " + result);

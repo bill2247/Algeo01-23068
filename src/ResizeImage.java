@@ -5,6 +5,29 @@ import java.io.IOException;
 import java.util.Scanner;
 
 public class ResizeImage {
+    private int width;
+    private int height;
+
+    public ResizeImage(String imagePath) {
+        try {
+            BufferedImage image = ImageIO.read(new File(imagePath));
+            this.width = image.getWidth();
+            this.height = image.getHeight();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public int getWidth() {
+        return width;
+    }
+
+    public int getHeight() {
+        return height;
+    }    
+
+
+
 
     static double[][] XD = {
         {0, 0, 0, 0, 0, 16, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
@@ -29,7 +52,7 @@ public class ResizeImage {
     public static int[][][] readImage(String fileName) {
         try {
             // Load gambar dari file
-            File inputFile = new File(fileName);
+            File inputFile = new File("./test/"+fileName);
             BufferedImage image = ImageIO.read(inputFile);
             
             // Dapatkan lebar dan tinggi gambar
@@ -59,7 +82,7 @@ public class ResizeImage {
     }
 
 
-    public int bicubic(Matrix matrixRGBtemp, int a, int b){
+    public static int bicubic(Matrix matrixRGBtemp, double a, double b){
         Matrix A_inv = new Matrix(16, 16);
         A_inv.matrix = XD;
         // Menggunakan nilai dari matrixRGBtemp
@@ -91,9 +114,14 @@ public class ResizeImage {
                 values[index++] = matrix[i][j];
             }
         }
-        Matrix coefficients = getCoefficients(values, A_inv);
+        Matrix coefficients = BicubicSplineInterpolation.getCoefficients(values, A_inv);
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 4; j++) {
+                coefficients.matrix[i][j] /= 16;
+            }
+        }
         // Menghitung hasil interpolasi bicubic spline pada titik (a, b)
-        int result = bicubicInterpolation(coefficients, a, b); //////////////
+        int result = (int) BicubicSplineInterpolation.bicubicInterpolation(coefficients, a, b);
 
         return result;
     }
@@ -110,25 +138,26 @@ public class ResizeImage {
         int[][][] rgbMatrix = readImage(imageName);
 
         if (rgbMatrix != null) {
-            int height = rgbMatrix.length;
-            int width = rgbMatrix[0].length;
             System.out.println("Matriks RGB berhasil dibaca dan disimpan.");
-            System.out.println("Ukuran matriks: " + height + " x " + width);
         }
 
+        ResizeImage sizeImage = new ResizeImage("./test/" + imageName);
+        int width = sizeImage.getWidth();
+        int height = sizeImage.getHeight();
+
         System.out.print("Masukkan skala heigth : ");
-        int heightSkala = scanner.nextLine();
+        double heightSkala = scanner.nextDouble();
         System.out.print("Masukkan skala width : ");
-        int widthSkala = scanner.nextLine(); ////////////////////////////////////////////
+        double widthSkala = scanner.nextDouble(); 
 
         
 
         Matrix matrixRtemp = new Matrix(height+2, width+2);
         Matrix matrixGtemp = new Matrix(height+2, width+2);
         Matrix matrixBtemp = new Matrix(height+2, width+2);
-        double[] matrixRtem = new double[height+2][width+2];
-        double[] matrixGtem = new double[height+2][width+2];
-        double[] matrixBtem = new double[height+2][width+2];
+        double[][] matrixRtem = new double[height+2][width+2];
+        double[][] matrixGtem = new double[height+2][width+2];
+        double[][] matrixBtem = new double[height+2][width+2];
         for (int i = 1; i <= height; i++) {
             for (int j = 1; j <= width; j++) { 
                 matrixRtem[i][j] = rgbMatrix[i-1][j-1][0];
@@ -177,17 +206,18 @@ public class ResizeImage {
         matrixRtemp.matrix = matrixRtem;
         matrixGtemp.matrix = matrixGtem;
         matrixBtemp.matrix = matrixBtem;
-
-        heightBaru = heigth * heightSkala;
-        widthBaru = width * widthSkala;
+  
+        int heightBaru = (int) (height * heightSkala);
+        int widthBaru = (int) (width * widthSkala);
+        System.out.println("Ukuran image menjadi: "+heightBaru+"*"+widthBaru);
         Matrix redMatrix = new Matrix(heightBaru, widthBaru);
         Matrix greenMatrix = new Matrix(heightBaru, widthBaru);
         Matrix blueMatrix = new Matrix(heightBaru, widthBaru);
         
         for (int i = 0; i < heightBaru; i++) {
             for (int j = 0; j < widthBaru; j++) {
-                double titikI = (i*(height/(heightBaru-1)))+1;
-                double titikJ = (j*(width/(widthBaru-1)))+1;
+                double titikI = (i*((height-1)/(double)(heightBaru-1)))+1;
+                double titikJ = (j*((width-1)/(double)(widthBaru-1)))+1;
                 redMatrix.matrix[i][j] = bicubic(matrixRtemp, titikI, titikJ);
                 greenMatrix.matrix[i][j] = bicubic(matrixGtemp, titikI, titikJ);
                 blueMatrix.matrix[i][j] = bicubic(matrixBtemp, titikI, titikJ);
@@ -195,19 +225,19 @@ public class ResizeImage {
         }
 
         // Gabungkan ke dalam matriks 3 dimensi rgbNew
-        int[][][] rgbNew = new int[p][l][3];
-        for (int y = 0; y < p; y++) {
-            for (int x = 0; x < l; x++) {
-                rgbNew[y][x][0] = redMatrix[y][x];   // Red
-                rgbNew[y][x][1] = greenMatrix[y][x]; // Green
-                rgbNew[y][x][2] = blueMatrix[y][x];  // Blue
+        int[][][] rgbNew = new int[heightBaru][widthBaru][3];
+        for (int y = 0; y < heightBaru; y++) {
+            for (int x = 0; x < widthBaru; x++) {
+                rgbNew[y][x][0] = (int) redMatrix.matrix[y][x];   // Red
+                rgbNew[y][x][1] = (int) greenMatrix.matrix[y][x]; // Green
+                rgbNew[y][x][2] = (int) blueMatrix.matrix[y][x];  // Blue
             }
         }
 
         // Buat gambar baru dari rgbNew
-        BufferedImage outputImage = new BufferedImage(l, p, BufferedImage.TYPE_INT_RGB);
-        for (int y = 0; y < p; y++) {
-            for (int x = 0; x < l; x++) {
+        BufferedImage outputImage = new BufferedImage(widthBaru, heightBaru, BufferedImage.TYPE_INT_RGB);
+        for (int y = 0; y < heightBaru; y++) {
+            for (int x = 0; x < widthBaru; x++) {
                 // Gabungkan nilai RGB ke dalam integer
                 int rgb = (rgbNew[y][x][0] << 16) | (rgbNew[y][x][1] << 8) | rgbNew[y][x][2];
                 outputImage.setRGB(x, y, rgb); // Set pixel
@@ -217,8 +247,8 @@ public class ResizeImage {
 
         // Simpan gambar ke file output
         try {
-            File outputFile = new File("imageOutput.jpg");
-            ImageIO.write(outputImage, "jpg", outputFile);
+            File outputFile = new File("imageOutput.png");
+            ImageIO.write(outputImage, "png", outputFile);
             System.out.println("Gambar berhasil disimpan sebagai 'imageOutput.jpg'");
         } catch (IOException e) {
             e.printStackTrace();

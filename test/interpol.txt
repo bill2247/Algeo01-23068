@@ -1,0 +1,3 @@
+
+y = 0.0 + 1.0x^1 + -0.0x^2 + 0.0x^3
+Taksiran nilai y pada x = 1.0 adalah 1.0

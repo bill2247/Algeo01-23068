@@ -1,0 +1,2 @@
+
+Nilai interpolasi di titik (0.0, ): 21.0

@@ -8,35 +8,20 @@ public class Interpolasi{
     private Matrix mat;
     private double x; 
     private double[] solOfInterpolation;
-<<<<<<< HEAD
-
-    public Interpolasi(){
-        this.n = 0;
-=======
     static Scanner input = new Scanner(System.in);
     StringBuilder output; 
 
     public Interpolasi(){
         this.n = 0;
         this.output = new StringBuilder();
->>>>>>> rusmin
     }
 
     public void readInterpolasi(){
         // Memilih metode input
-<<<<<<< HEAD
-        Scanner input = new Scanner(System.in);
-        System.out.println("Pilih metode input:");
-        System.out.println("1. Input dari keyboard");
-        System.out.println("2. Input dari file");
-        System.out.print("Pilihan: ");
-        int pilihan = input.nextInt();
-=======
         System.out.println("Pilih metode input:");
         System.out.println("1. Input dari keyboard");
         System.out.println("2. Input dari file");
         int pilihan = Utility.getValidChoice(1, 2);
->>>>>>> rusmin
         if (pilihan == 1){
             // Input dari keyboard
             System.out.print("Masukkan jumlah titik: ");
@@ -103,10 +88,6 @@ public class Interpolasi{
                 System.out.println("File tidak ditemukan");
             }
         }
-<<<<<<< HEAD
-        input.close();
-=======
->>>>>>> rusmin
     }
 
     public void solveInterpolasi(){
@@ -122,18 +103,6 @@ public class Interpolasi{
         // }
     }
 
-<<<<<<< HEAD
-    public void printSol(){
-        // Mencetak solusi dari persamaan interpolasi
-        System.out.println("Persamaan interpolasi:");
-        for (int i = 0; i < this.n; i++){
-            if (i == 0){
-                System.out.print("y = " + (float) this.solOfInterpolation[i]);
-            } else {
-                if (this.solOfInterpolation[i] >= 0){
-                    System.out.print(" + " + (float) this.solOfInterpolation[i] + "x^" + i);
-                } else {
-=======
      public void printSol() {
         // Mencetak solusi dari persamaan interpolasi
         System.out.println("Persamaan interpolasi:");
@@ -147,31 +116,12 @@ public class Interpolasi{
                     System.out.print(" + " + (float) this.solOfInterpolation[i] + "x^" + i);
                 } else {
                     this.output.append(" - ").append(- (float) this.solOfInterpolation[i]).append("x^").append(i);
->>>>>>> rusmin
                     System.out.print(" - " + (- (float) this.solOfInterpolation[i]) + "x^" + i);
                 }
             }
         }
         System.out.println();
     }
-<<<<<<< HEAD
-
-    public void printfc(){
-        double fx = 0;
-        for (int i = 0; i < this.n; i++){
-            fx += this.solOfInterpolation[i] * Math.pow(this.x, i);
-        }
-        System.out.println("Taksiran nilai y pada x = " + this.x + " adalah " + fx);
-    }
-
-    public static void main(String[] args){
-        Interpolasi interpolasi = new Interpolasi();
-        interpolasi.readInterpolasi();
-        interpolasi.solveInterpolasi();
-        interpolasi.printSol();
-        interpolasi.printfc();
-    }
-=======
     
     public void printfc() {
         double fx = 0;
@@ -185,5 +135,4 @@ public class Interpolasi{
         System.out.println(resultOutput);
     }
     
->>>>>>> rusmin
 }

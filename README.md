@@ -19,9 +19,11 @@ Fitur penentuan matriks balikan memiliki dua opsi metode penyelesaian, yaitu men
 * **Interpolasi** <br>
 Fitur ini menerima input n titik pada koordinat kartesian dua dimensi. Fungsi akan menentukan sebuah fungsi polinomial berderajat n yang melalui n titik tersebut.
 * **Bicubic Spline Interpolation** <br>
-Fitur ini 
+Fitur ini menerima input berupa empat nilai titik utama serta 12 turunan berarahnya yang akan diproses untuk mendapatkan nilai interpolasi di antara keempat tiik utama tersebut sesuai masukan user.
 * **Regresi linear dan Kuadratik Berganda** <br>
 Fitur ini menghitung regresi linear sederhana dan regresi kuadratik berdasarkan input n titik yang diberikan oleh pengguna.
+* **Regresi linear dan Kuadratik Berganda** <br>
+Fitur ini menerima input gambar yang akan diperbesar, diperkecil atau diresize sesuai skala height dan width yang diberikan user.
 
 ## Struktur Program 
 ```bash

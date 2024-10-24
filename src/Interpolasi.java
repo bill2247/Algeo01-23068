@@ -49,7 +49,7 @@ public class Interpolasi{
         } else if (pilihan == 2){
             // Input dari file .txt
             System.out.print("Masukkan nama file: ");
-            String filename = input.next();
+            String filename = "test/" + input.next();
             
             try {
                 File file = new File(filename);

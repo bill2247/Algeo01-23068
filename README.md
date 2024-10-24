@@ -80,7 +80,7 @@ Fitur ini menghitung regresi linear sederhana dan regresi kuadratik berdasarkan 
    java -cp bin Main
    ```
 ## Kontak
-Muh. Rusmin Nurwadin - 13523068@std.stei.itb.ac.id
-Sabilul Huda - 13523072@std.stei.itb.ac.id
+Muh. Rusmin Nurwadin - 13523068@std.stei.itb.ac.id <br>
+Sabilul Huda - 13523072@std.stei.itb.ac.id <br>
 Andrew Isra Saputra DB - 13523110.std.stei.itb.ac.id
    

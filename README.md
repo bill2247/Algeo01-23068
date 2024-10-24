@@ -9,7 +9,7 @@ Program ini dibuat dalam bahasa Java untuk memenuhi "Tugas Besar 1 Algeo 2024/20
 | Sabilul Huda  | 13523072 |
 | Andrew Isra Saputra DB  | 13523110 | 
 
-## Fitur-fitur
+## Fitur-Fitur
 * **Penyelesaian SPL** <br>
 Fitur penyelesaian SPL memiliki empat opsi metode penyelesaian, yaitu metode Gauss, metode Gauss Jordan, metode matriks balikan, dan kaidah Cramer.
 *  **Penentuan Determinan Matriks** <br>

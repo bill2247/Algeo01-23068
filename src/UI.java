@@ -7,8 +7,7 @@ public class UI {
         System.out.println("4. Polynomial Interpolation");
         System.out.println("5. Bicubic Spline Interpolation");
         System.out.println("6. Multiple Linear and Quadratic Regression");
-        System.out.println("7. Image Interpolation");
-        System.out.println("8. Exit");
+        System.out.println("7. Exit");
     }    
 
     public static void Pesan(){

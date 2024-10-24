@@ -12,7 +12,7 @@ public class Main {
             int choice = 0;
             UI.Menu();  
             
-            choice = Utility.getValidChoice(1,8);
+            choice = Utility.getValidChoice(1,7);
 
             if (choice == 1){
                 UI.SPL_Menu();
@@ -102,9 +102,6 @@ public class Main {
                 }
                 Utility.validasiFile(Regresi.output.toString());
                 System.out.println();
-            }
-            else if(choice == 7){
-                System.out.println("Belum implemen bang, moga jadi wkwk");
             }
             else{
                 break;

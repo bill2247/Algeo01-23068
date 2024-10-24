@@ -10,17 +10,19 @@ public class Matrix{
     String[] infiniteSPLsol;
     boolean infiniteSol = false;
     double[][] infiniteKoef;
-    double[] SPLParam; //solusi SPL Parametric, yang nilai seluruh parametric adalah 0;
+    StringBuilder output; 
 
     public Matrix(int rowNum, int colNum){
         this.rowNum = rowNum;
         this.colNum = colNum;
         this.matrix = new double[rowNum][colNum];
+        //this.output = new StringBuilder();
     }
 
     public Matrix(){
         this.rowNum = 0;
         this.colNum = 0;
+        this.output = new StringBuilder();
     }
 
     public void readMatrix(String type){
@@ -45,7 +47,7 @@ public class Matrix{
             String input2 = ""; // Inisialisasi input2
 
             do {
-                System.out.print("Masukkan jumlah variabel x : ");
+                System.out.print("Masukkan jumlah variabel (x1,x2,...,xn,y): ");
                 input1 = scanner.nextLine();
 
                 System.out.print("Masukkan jumlah data : ");
@@ -58,10 +60,11 @@ public class Matrix{
                 }
             } while (!Utility.cek_int(input1) || !Utility.cek_int(input2));
 
-            this.rowNum = Integer.parseInt(input1);
+            this.colNum = Integer.parseInt(input1);
             this.rowNum = Integer.parseInt(input2);
+
             this.matrix = new double[this.rowNum][this.colNum];
-            
+
             for (int i = 0; i < this.rowNum; i++) {
                 while (true) {
                     System.out.println("Masukkan elemen untuk baris " + (i + 1) + " (pisahkan dengan spasi): ");
@@ -246,8 +249,12 @@ public class Matrix{
 
     public double DeterminantUsingCofactor(){
         // Menghitung determinan dengan metode kofaktor
+        if(this.output == null){
+            this.output = new StringBuilder();
+        }
         if (this.rowNum != this.colNum) {
             System.out.println("Kesalahan: Matriks harus berbentuk persegi.");
+            this.output.append("Kesalahan: Matriks harus berbentuk persegi.");
             return 0;
         }
 
@@ -271,6 +278,7 @@ public class Matrix{
         // Menghitung determinan menggunakan OBE (Metode segitiga)
         if (this.rowNum != this.colNum) {
             System.out.println("Kesalahan: Matriks harus berbentuk persegi.");
+            this.output.append("Kesalahan: Matriks harus berbentuk persegi.\n");
             return 0;
         }
     
@@ -337,12 +345,14 @@ public class Matrix{
         // Menghasilkan invers dari this.matrix mengunakan metode adjoint
         if (this.rowNum != this.colNum) {
             System.out.println("Kesalahan: Matriks harus berbentuk persegi.");
+            this.output.append("Kesalahan: Matriks harus berbentuk persegi.\n");
             return null;
         }
 
         double determinant = this.DeterminantUsingRowReduction();
         if (determinant == 0) {
             System.out.println("Kesalahan: Determinan matriks bernilai 0.");
+            this.output.append("Kesalahan: Determinan matriks bernilai 0.\n");
             return null;
         }
 
@@ -360,8 +370,12 @@ public class Matrix{
 
     public double [][] InverseUsingGaussJordan(){
         // Menghasilkan invers dari this.matrix menggunakan metode Gauss-Jordan
+        if(this.output == null){
+            this.output = new StringBuilder();
+        }
         if (this.rowNum != this.colNum) {
             System.out.println("Kesalahan: Matriks harus berbentuk persegi.");
+            this.output.append("Kesalahan: Matriks harus berbentuk persegi.\n");
             return null;
         }
 
@@ -424,7 +438,6 @@ public class Matrix{
 
     public void solveManySolution(){
         this.infiniteKoef = new double[this.colNum - 1][this.colNum];
-        this.SPLParam = new double[this.colNum];
         for (int i = 0; i < this.colNum - 1; i++){
             for (int j = 0; j < this.colNum; j++){
                 if (i == j){
@@ -577,6 +590,7 @@ public class Matrix{
             if (allZero && Math.abs(this.matrix[i][this.colNum - 1]) > epsilon) {
                 hasSolution = false;
                 System.out.println("SPL tidak memiliki solusi.");
+                Utility.validasiFile("SPL tidak memiliki solusi.");
                 break;
             } else if (allZero && Math.abs(this.matrix[i][this.colNum - 1]) < epsilon) {
                 infiniteSolution = true;
@@ -668,6 +682,7 @@ public class Matrix{
             if (allZero && this.matrix[i][this.colNum - 1] != 0) {
                 hasSolution = false;
                 System.out.println("SPL tidak memiliki solusi.");
+                this.output.append("SPL tidak memiliki solusi.");
                 break;
             } else if (allZero && this.matrix[i][this.colNum - 1] == 0) {
                 infiniteSolution = true;
@@ -711,6 +726,7 @@ public class Matrix{
         
         if(inverseA.matrix == null){ // agar tidak error kebawahnya.
             System.out.println("Tidak dapat menemukan solusi SPL.");
+            this.output.append("Tidak dapat menemukan solusi SPL.");
             return;
         }
 
@@ -759,23 +775,34 @@ public class Matrix{
         }
         if(determinantA == 0){
             System.out.println("Tidak dapat menemukan solusi SPL.");
+            this.output.append("Tidak dapat menemukan solusi SPL.");
             return;
         }
         Utility.roundArrayElements(SPLsolution);
         printSol();
     }
 
-    public void printSol(){
+    public void printSol() {
         // I. S. : Solusi SPL sudah terisi
-        // F. S. : Solusi SPL ditampilkan pada layar
-        if (this.infiniteSol){
-            for (int i = 0; i < this.colNum - 1; i ++){
-                System.out.println(this.infiniteSPLsol[i]);
+        // F. S. : Solusi SPL ditampilkan pada layar dan disimpan ke file
+        
+        if(this.output == null){
+            output = new StringBuilder();
+        }
+        
+        if (this.infiniteSol) {
+            for (int i = 0; i < this.colNum - 1; i++) {
+                String line = "x" + (i + 1) + " = " + this.infiniteSPLsol[i];
+                System.out.println(line); 
+                this.output.append(line).append("\n"); 
             }
         } else {
             for (int i = 0; i < this.rowNum; i++) {
-                System.out.println("x" + (i + 1) + " = " + this.SPLsolution[i]);
+                String line = "x" + (i + 1) + " = " + this.SPLsolution[i];
+                System.out.println(line); 
+                this.output.append(line).append("\n"); 
             }
         }
+        //Utility.validasiFile(output.toString());
     }
 }

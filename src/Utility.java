@@ -42,6 +42,25 @@ public class Utility {
         return choice;
     }
 
+    public static void validasiFile(String output) {
+        String input; 
+        System.out.println("Apakah yakin ingin menyimpan pada file (Y/N): ");
+        input = scan.nextLine(); // Menggunakan nextLine() untuk membaca input
+    
+        // Memastikan input valid
+        while (!input.equals("Y") && !input.equals("y") && !input.equals("N") && !input.equals("n")) {
+            System.out.println("Input tidak valid. Apakah anda ingin menyimpan pada file (Y/N): ");
+            input = scan.nextLine(); // Menggunakan nextLine() di sini juga
+        }
+    
+        // Memproses sesuai dengan input
+        if (input.equals("Y") || input.equals("y")) {
+            saveOutputToFile(output.toString());
+        } else {
+            System.out.println("Operasi dibatalkan.");
+        }
+    }  
+
     // Prosedur untuk menyimpan output ke dalam file
     public static void saveOutputToFile(String output) {
         // Meminta nama file dari keyboard

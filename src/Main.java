@@ -2,9 +2,12 @@ import java.util.*;
 //import java.io.*;
 
 public class Main {
-    static Scanner scan = new Scanner(System.in); // Inisialisasi Scanner dengan System.in
+    static Scanner scan = new Scanner(System.in); // Inisialisasi Scanner dengan System.in 
     
     public static void main(String[] args) {
+        StringBuilder output;
+        output = new StringBuilder();
+
         while(true){
             int choice = 0;
             UI.Menu();  
@@ -25,9 +28,11 @@ public class Main {
                 } else if (method == 4){
                     SPL.solveSPLUsingCramer();
                 }
+                Utility.validasiFile(SPL.output.toString());
                 System.out.println();
             }
             else if(choice == 2){
+                String s;
                 UI.Det_Menu();
                 int method = Utility.getValidChoice(1, 2);
                 Matrix mat = new Matrix();
@@ -39,6 +44,8 @@ public class Main {
                     determinant = mat.DeterminantUsingRowReduction();
                 }
                 System.out.println("Determinan matriks: " + determinant);
+                s = "Determianan matriks: "+determinant;
+                Utility.validasiFile(s);
                 System.out.println();
             }
             else if (choice == 3){
@@ -58,11 +65,15 @@ public class Main {
                     for (int i = 0; i < mat.rowNum; i++){
                         for (int j = 0; j < mat.colNum; j++){
                             System.out.print(inverseMatrix[i][j] + " ");
+                            output.append(inverseMatrix[i][j]).append(" ");
                         }
-                            System.out.println();
-                        }
+                        System.out.println();
+                        output.append("\n");
+                    }
+                    Utility.validasiFile(output.toString());
                 } else if (inverseMatrix == null){
                     System.out.println("Matriks tidak memiliki invers.");
+                    Utility.validasiFile("Matriks tidak memiliki invers.");
                 }
                 System.out.println();
             }
@@ -72,10 +83,12 @@ public class Main {
                 interpolasi.solveInterpolasi();
                 interpolasi.printSol();
                 interpolasi.printfc();
+                Utility.validasiFile(interpolasi.output.toString());
                 System.out.println();
             }
             else if(choice == 5){
                 BicubicSplineInterpolation.Bicubic();
+                Utility.validasiFile(BicubicSplineInterpolation.output.toString());
             }
             else if (choice == 6){
                 UI.reg_Menu();
@@ -87,6 +100,7 @@ public class Main {
                 else{
                     Regresi.MultipleQuadraticRegression();
                 }
+                Utility.validasiFile(Regresi.output.toString());
                 System.out.println();
             }
             else if(choice == 7){

@@ -9,9 +9,11 @@ public class Interpolasi{
     private double x; 
     private double[] solOfInterpolation;
     static Scanner input = new Scanner(System.in);
+    StringBuilder output; 
 
     public Interpolasi(){
         this.n = 0;
+        this.output = new StringBuilder();
     }
 
     public void readInterpolasi(){
@@ -101,28 +103,36 @@ public class Interpolasi{
         // }
     }
 
-    public void printSol(){
+     public void printSol() {
         // Mencetak solusi dari persamaan interpolasi
         System.out.println("Persamaan interpolasi:");
-        for (int i = 0; i < this.n; i++){
-            if (i == 0){
+        for (int i = 0; i < this.n; i++) {
+            if (i == 0) {
+                this.output.append("y = ").append((float) this.solOfInterpolation[i]);
                 System.out.print("y = " + (float) this.solOfInterpolation[i]);
             } else {
-                if (this.solOfInterpolation[i] >= 0){
+                if (this.solOfInterpolation[i] >= 0) {
+                    this.output.append(" + ").append((float) this.solOfInterpolation[i]).append("x^").append(i);
                     System.out.print(" + " + (float) this.solOfInterpolation[i] + "x^" + i);
                 } else {
+                    this.output.append(" - ").append(- (float) this.solOfInterpolation[i]).append("x^").append(i);
                     System.out.print(" - " + (- (float) this.solOfInterpolation[i]) + "x^" + i);
                 }
             }
         }
         System.out.println();
     }
-
-    public void printfc(){
+    
+    public void printfc() {
         double fx = 0;
-        for (int i = 0; i < this.n; i++){
+        for (int i = 0; i < this.n; i++) {
             fx += this.solOfInterpolation[i] * Math.pow(this.x, i);
         }
-        System.out.println("Taksiran nilai y pada x = " + this.x + " adalah " + fx);
+
+        this.output.append("\n");
+        String resultOutput = "Taksiran nilai y pada x = " + this.x + " adalah " + fx;
+        this.output.append(resultOutput);
+        System.out.println(resultOutput);
     }
+    
 }

@@ -8,6 +8,7 @@ public class Regresi {
     static Matrix matrix_Y = new Matrix();
     static Matrix Data = new Matrix(); // untuk simpan seluruh inputan
     static double[] Target;
+    public static StringBuilder output;
 
     public static void readMatrix() {
         System.out.println("Masukkan metode penginputan: ");
@@ -135,6 +136,9 @@ public class Regresi {
     }
 
     public static void MultipleLinearRegression(){
+        if(output == null){
+            output = new StringBuilder();
+        }
         Matrix mX_Tran = new Matrix(matrix_X.colNum, matrix_X.rowNum);
         Matrix result1 = new Matrix(matrix_X.colNum, matrix_X.colNum); // X * XT
         Matrix result2 = new Matrix(matrix_X.colNum, 1);
@@ -168,9 +172,11 @@ public class Regresi {
             for (int i = 0; i < augmented.infiniteSPLsol.length; i++){
                 if(i == 0){
                     System.out.print(augmented.infiniteSPLsol[i]);
+                    output.append("Y = ").append(augmented.infiniteSPLsol[i]);
                 }
                 else{
                     System.out.print(" + " + "(" + augmented.infiniteSPLsol[i] + ")" + "X" + i );
+                    output.append(" + ").append("(").append(augmented.infiniteSPLsol[i]).append(")").append("X").append(i);
                 }
             }
             System.out.println();
@@ -182,29 +188,37 @@ public class Regresi {
         for (int i = 0; i < augmented.SPLsolution.length; i++){
             if(i == 0){
                 System.out.print(Mbeta[i]);
+                output.append("Y = ").append(Mbeta[i]);
                 hasil+=Mbeta[i];
             }
             else{
                 if(Mbeta[i] < 0){
                     System.out.print(" - " + -1*Mbeta[i] + "X" + i);
+                    output.append(" - ").append(-1 * Mbeta[i]).append("X").append(i);
                 }
                 else{
                     System.out.print(" + " + Mbeta[i] + "X" + i);
+                    output.append(" - ").append(Mbeta[i]).append("X").append(i);
                 }
                 hasil += Mbeta[i]*Target[i-1];
             }
             
         }
         System.out.println();
+        output.append("\n");
         System.out.println("Hampiran dari data adalah Y = " + hasil);
+        output.append("Hampiran dari data adalah Y = ").append(hasil);
     }
     
     public static void MultipleQuadraticRegression() {    
-        // Menghitung ukuran baru dari newMX (ukuran augmented matrix untuk regresi kuadratik)
+ 
         int newM = (m * (m + 1) / 2) + m + 1;  // Kombinasi kuadratik + variabel linier + konstanta
         
         Matrix newMX = new Matrix(n, newM);  // Matriks dengan ukuran n x newM
         
+        if(output == null){
+            output = new StringBuilder();
+        }
         // Mengisi xi^2 (kuadrat dari setiap variabel)
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < m; j++) {
@@ -296,9 +310,11 @@ public class Regresi {
             for(int i = 0; i < m; i++) {
                 if(i == 0){
                     System.out.print("("+augmented.infiniteSPLsol[idx]+")X" + (i+1) +"^2");
+                    output.append("Y = ").append("(").append(augmented.infiniteSPLsol[idx]).append(")X").append(i+1).append("^2");
                 }
                 else{
                     System.out.print(" + " + "(" + augmented.infiniteSPLsol[idx] + ")" + "X" + (i+1) + "^2");
+                    output.append(" + ").append("(").append(augmented.infiniteSPLsol[idx]).append(")").append("X").append(i + 1).append("^2");
                 }
                 idx++;
             }
@@ -306,17 +322,21 @@ public class Regresi {
             for (int i = 0; i < m; i++) {
                 for(int j = i+1; j < m; j++) {
                     System.out.print(" + " + "(" + augmented.infiniteSPLsol[idx] + ")" + "X" + (i+1) + "X" +(j+1));
+                    output.append(" + ").append("(").append(augmented.infiniteSPLsol[idx]).append(")").append("X").append(i + 1).append("X").append(j + 1);
                     idx++;
                 }
             }
 
             for(int i = 0; i < m; i++) {
                 System.out.print(" + " + "(" + augmented.infiniteSPLsol[idx] + ")" + "X" + (i+1));
+                output.append(" + ").append("(").append(augmented.infiniteSPLsol[idx]).append(")").append("X").append(i + 1);
                 idx++;
             }
 
             System.out.println(" + " + "(" + augmented.infiniteSPLsol[idx] + ")");
+            output.append(" + ").append("(").append(augmented.infiniteSPLsol[idx]).append(")");
             System.out.println("Tidak ada solusi pasti, tidak bisa menentukan nilai Y.");
+            output.append("Tidak ada solusi pasti, tidak bisa menentukan nilai Y.");
             System.out.println();
             return;
         }
@@ -327,56 +347,64 @@ public class Regresi {
 
         idx = 0;
 
-        // Mengisi kuadrat dari Target
         for(int i = 0; i < m; i++) {
             if(i == 0){
-                System.out.print(Mbeta[idx] + "X" + (i+1) + "^2");
-            }
-            else{
+                System.out.print(Mbeta[idx] + "X" + (i + 1) + "^2");
+                output.append(Mbeta[idx]).append("X").append(i + 1).append("^2");
+            } else {
                 if(Mbeta[idx] < 0){
-                    System.out.print(" - " + -1*Mbeta[idx] + "X" + (i+1) + "^2");
+                    System.out.print(" - " + -1 * Mbeta[idx] + "X" + (i + 1) + "^2");
+                    output.append(" - ").append(-1 * Mbeta[idx]).append("X").append(i + 1).append("^2");
+                } else {
+                    System.out.print(" + " + Mbeta[idx] + "X" + (i + 1) + "^2");
+                    output.append(" + ").append(Mbeta[idx]).append("X").append(i + 1).append("^2");
                 }
-                else{
-                    System.out.print(" + " + Mbeta[idx] + "X" + (i+1) + "^2");
-                }
-            }
-            hasil+= NewTarget[idx] * Mbeta[idx];
-            idx++;
-        }
-
-        for (int i = 0; i < m; i++) {
-            for(int j = i+1; j < m; j++) {
-                if(Mbeta[idx] < 0){
-                    System.out.print(" - " + -1*Mbeta[idx] + "X" + (i+1) + "X" + (j+1));
-                }
-                else{
-                    System.out.print(" + " + Mbeta[idx] + "X" + (i+1) + "X" + (j+1));
-                }
-                hasil += NewTarget[idx]*Mbeta[idx];
-                idx++;
-            }
-        }
-        for(int i = 0; i < m; i++) {
-            if(Mbeta[idx] < 0){
-                System.out.print(" - " + -1*Mbeta[idx] + "X" + (i+1));
-            }
-            else{
-                System.out.print(" + " + Mbeta[idx] + "X" + (i+1));
             }
             hasil += NewTarget[idx] * Mbeta[idx];
             idx++;
         }
-
+        
+        for (int i = 0; i < m; i++) {
+            for(int j = i + 1; j < m; j++) {
+                if(Mbeta[idx] < 0){
+                    System.out.print(" - " + -1 * Mbeta[idx] + "X" + (i + 1) + "X" + (j + 1));
+                    output.append(" - ").append(-1 * Mbeta[idx]).append("X").append(i + 1).append("X").append(j + 1);
+                } else {
+                    System.out.print(" + " + Mbeta[idx] + "X" + (i + 1) + "X" + (j + 1));
+                    output.append(" + ").append(Mbeta[idx]).append("X").append(i + 1).append("X").append(j + 1);
+                }
+                hasil += NewTarget[idx] * Mbeta[idx];
+                idx++;
+            }
+        }
+        
+        for(int i = 0; i < m; i++) {
+            if(Mbeta[idx] < 0){
+                System.out.print(" - " + -1 * Mbeta[idx] + "X" + (i + 1));
+                output.append(" - ").append(-1 * Mbeta[idx]).append("X").append(i + 1);
+            } else {
+                System.out.print(" + " + Mbeta[idx] + "X" + (i + 1));
+                output.append(" + ").append(Mbeta[idx]).append("X").append(i + 1);
+            }
+            hasil += NewTarget[idx] * Mbeta[idx];
+            idx++;
+        }
+        
         if(Mbeta[idx] < 0){
-            System.out.print(" - " + -1*Mbeta[idx]);
-        }
-        else{
+            System.out.print(" - " + -1 * Mbeta[idx]);
+            output.append(" - ").append(-1 * Mbeta[idx]);
+        } else {
             System.out.print(" + " + Mbeta[idx]);
+            output.append(" + ").append(Mbeta[idx]);
         }
-
+        
         hasil += Mbeta[idx];
-
+        
         System.out.println();
+        output.append("\n");
+ 
         System.out.println("Hampiran dari data adalah Y = " + hasil);
+        output.append("Hampiran dari data adalah Y = ").append(hasil).append("\n");
+        
     }    
 }

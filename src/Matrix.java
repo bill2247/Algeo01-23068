@@ -140,6 +140,9 @@ public class Matrix{
     public void writeMatrix(){
         // I. S. : Matrix sudah terisi
         // F. S. : Matrix dituliskan pada layar
+        if(this.output == null){
+            this.output = new StringBuilder();
+        }
         for (int i = 0; i < this.rowNum; i++) {
             for (int j = 0; j < this.colNum; j++) {
                 System.out.print(this.matrix[i][j] + " ");
@@ -150,6 +153,9 @@ public class Matrix{
 
     public double[][] addMatrix(Matrix other){
         // Menambahkan this.matrix dengan Matrix other
+        if(this.output == null){
+            this.output = new StringBuilder();
+        }
         if (this.rowNum != other.rowNum || this.colNum != other.colNum) {
             System.out.println("Kesalahan: Ukuran matriks tidak sama.");
             return null;
@@ -184,6 +190,9 @@ public class Matrix{
 
     public double[][] multiplyMatrix(Matrix other) {
         // Mengalikan this.matrix dengan Matrix other
+        if(this.output == null){
+            this.output = new StringBuilder();
+        }
         if (this.colNum != other.rowNum) {
             System.out.println("Kesalahan: Jumlah kolom matriks pertama tidak sama dengan jumlah baris matriks kedua.");
             return null;
@@ -220,6 +229,9 @@ public class Matrix{
     public double[][] transposeMatrix(){
         // menghasilkan matrix yang sudah di-transpose
         Matrix result = new Matrix(this.colNum, this.rowNum);
+        if(this.output == null){
+            this.output = new StringBuilder();
+        }
         for (int i = 0; i < this.rowNum; i++) {
             for (int j = 0; j < this.colNum; j++) {
                 result.matrix[j][i] = this.matrix[i][j];
@@ -276,6 +288,9 @@ public class Matrix{
 
     public double DeterminantUsingRowReduction(){
         // Menghitung determinan menggunakan OBE (Metode segitiga)
+        if(this.output == null){
+            this.output = new StringBuilder();
+        }
         if (this.rowNum != this.colNum) {
             System.out.println("Kesalahan: Matriks harus berbentuk persegi.");
             this.output.append("Kesalahan: Matriks harus berbentuk persegi.\n");
@@ -343,6 +358,9 @@ public class Matrix{
     
     public double[][] InverseUsingAdjoin(){
         // Menghasilkan invers dari this.matrix mengunakan metode adjoint
+        if(this.output == null){
+            this.output = new StringBuilder();
+        }
         if (this.rowNum != this.colNum) {
             System.out.println("Kesalahan: Matriks harus berbentuk persegi.");
             this.output.append("Kesalahan: Matriks harus berbentuk persegi.\n");
@@ -438,6 +456,9 @@ public class Matrix{
 
     public void solveManySolution(){
         this.infiniteKoef = new double[this.colNum - 1][this.colNum];
+        if(this.output == null){
+            this.output = new StringBuilder();
+        }
         for (int i = 0; i < this.colNum - 1; i++){
             for (int j = 0; j < this.colNum; j++){
                 if (i == j){
@@ -625,6 +646,9 @@ public class Matrix{
         // F. S. : Solusi SPL ditampilkan pada layar (penyelesaian menggunakan metode eliminasi Gauss-Jordan)
         int row = 0;
         int col = 0;
+        if(this.output == null){
+            this.output = new StringBuilder();
+        }
         while (row < this.rowNum && col < this.colNum - 1) {
             // Mencari baris dengan elemen terbesar pada kolom ke-col
             int maxRow = row;
@@ -701,7 +725,6 @@ public class Matrix{
                     this.SPLsolution[i] = this.matrix[i][this.colNum - 1];
                 }
             }
-            Utility.roundArrayElements(SPLsolution);
             printSol();
         }
     }
@@ -722,6 +745,17 @@ public class Matrix{
         }
 
         Matrix inverseA = new Matrix(this.rowNum, this.colNum - 1);
+
+        double det = 0;
+
+        det = A.DeterminantUsingCofactor();
+
+        if(det == 0){
+            System.out.println("Tidak dapat menemukan solusi SPL.");
+            this.output.append("Tidak dapat menemukan solusi SPL.");
+            return;
+        }
+
         inverseA.matrix = A.InverseUsingGaussJordan();
         
         if(inverseA.matrix == null){ // agar tidak error kebawahnya.
@@ -736,7 +770,6 @@ public class Matrix{
         for (int i = 0; i < this.rowNum; i++){
             this.SPLsolution[i] = X.matrix[i][0];
         }
-        Utility.roundArrayElements(SPLsolution);
         printSol();
     }
 
@@ -744,6 +777,9 @@ public class Matrix{
         // I. S. : Matriks augmented sudah terisi
         // F. S. : Solusi SPL ditampilkan pada layar (penyelesaian menggunakan metode eliminasi Gauss)
         Matrix determinant = new Matrix(this.rowNum, this.colNum - 1);
+        if(this.output == null){
+            this.output = new StringBuilder();
+        }
         for (int i = 0; i < this.rowNum; i++) {
             for (int j = 0; j < this.colNum - 1; j++) {
                 determinant.matrix[i][j] = this.matrix[i][j];
